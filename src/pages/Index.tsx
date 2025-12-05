@@ -1,6 +1,7 @@
-import { useState, useMemo } from 'react';
+import { useState, useCallback } from 'react';
 import { Sidebar } from '@/components/dashboard/Sidebar';
 import { AccountsCard } from '@/components/dashboard/AccountsCard';
+import { AccountDetailsModal } from '@/components/dashboard/AccountDetailsModal';
 import { UpcomingRenewals } from '@/components/dashboard/UpcomingRenewals';
 import { AddSubscriptionModal } from '@/components/dashboard/AddSubscriptionModal';
 import { ManageSubscriptionModal } from '@/components/dashboard/ManageSubscriptionModal';
@@ -10,7 +11,7 @@ import { NetWorthView } from '@/components/views/NetWorthView';
 import { SpendingView } from '@/components/views/SpendingView';
 import { TransactionsView } from '@/components/views/TransactionsView';
 import { mockSubscriptions, mockAccounts, mockTransactions } from '@/data/mockData';
-import { Subscription, Transaction, Category, View } from '@/types/subscription';
+import { Subscription, Transaction, Category, View, Account } from '@/types/subscription';
 import { toast } from '@/hooks/use-toast';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { X } from 'lucide-react';
@@ -21,20 +22,36 @@ const Index = () => {
   const [currentView, setCurrentView] = useState<View>('dashboard');
   const [subscriptions, setSubscriptions] = useState<Subscription[]>(mockSubscriptions);
   const [transactions, setTransactions] = useState<Transaction[]>(mockTransactions);
+  const [accounts, setAccounts] = useState<Account[]>(mockAccounts);
   const [selectedCategory, setSelectedCategory] = useState<Category | 'All'>('All');
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [manageModalOpen, setManageModalOpen] = useState(false);
   const [selectedSubscription, setSelectedSubscription] = useState<Subscription | null>(null);
   const [cancelledAlert, setCancelledAlert] = useState<string | null>(null);
+  const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
+  const [accountModalOpen, setAccountModalOpen] = useState(false);
 
-  const handleAddSubscription = (newSub: Omit<Subscription, 'id'>) => {
+  const updateAccountBalance = useCallback((accountId: string, amount: number, isDeduction: boolean = true) => {
+    setAccounts(prev => prev.map(acc => {
+      if (acc.id === accountId) {
+        return {
+          ...acc,
+          balance: isDeduction ? acc.balance - amount : amount,
+          updatedAt: new Date(),
+        };
+      }
+      return acc;
+    }));
+  }, []);
+
+  const handleAddSubscription = (newSub: Omit<Subscription, 'id'>, accountId: string) => {
     const subscription: Subscription = {
       ...newSub,
       id: Date.now().toString(),
     };
     setSubscriptions(prev => [subscription, ...prev]);
     
-    // Also add a transaction
+    // Add a transaction linked to the account
     const transaction: Transaction = {
       id: `t-${Date.now()}`,
       date: newSub.billingDate,
@@ -42,8 +59,17 @@ const Index = () => {
       category: newSub.category,
       amount: newSub.amount,
       type: newSub.recurring ? 'Recurring' : 'One-time',
+      accountId,
     };
     setTransactions(prev => [transaction, ...prev]);
+    
+    // Update the payment account balance
+    updateAccountBalance(accountId, newSub.amount);
+    
+    // Update the subscriptions budget if it's a recurring subscription
+    if (newSub.recurring) {
+      updateAccountBalance('budget', newSub.amount);
+    }
     
     toast({
       title: "Subscription added",
@@ -65,6 +91,19 @@ const Index = () => {
     }
   };
 
+  const handleAccountClick = (account: Account) => {
+    setSelectedAccount(account);
+    setAccountModalOpen(true);
+  };
+
+  const handleUpdateAccountBalance = (accountId: string, newBalance: number) => {
+    updateAccountBalance(accountId, newBalance, false);
+    toast({
+      title: "Balance updated",
+      description: `Account balance has been adjusted.`,
+    });
+  };
+
   const renderView = () => {
     switch (currentView) {
       case 'dashboard':
@@ -80,7 +119,7 @@ const Index = () => {
       case 'recurring':
         return <RecurringView subscriptions={subscriptions} />;
       case 'networth':
-        return <NetWorthView accounts={mockAccounts} />;
+        return <NetWorthView accounts={accounts} />;
       case 'spending':
         return <SpendingView transactions={transactions} />;
       case 'transactions':
@@ -128,7 +167,11 @@ const Index = () => {
 
         {/* Right Sidebar */}
         <aside className="w-full lg:w-80 xl:w-96 p-6 lg:p-8 lg:border-l border-border space-y-6 bg-background">
-          <AccountsCard accounts={mockAccounts} />
+          <AccountsCard 
+            accounts={accounts} 
+            selectedAccountId={accountModalOpen ? selectedAccount?.id : null}
+            onAccountClick={handleAccountClick}
+          />
           <UpcomingRenewals 
             subscriptions={subscriptions} 
             onManage={handleManageClick}
@@ -141,12 +184,20 @@ const Index = () => {
         open={addModalOpen}
         onClose={() => setAddModalOpen(false)}
         onAdd={handleAddSubscription}
+        accounts={accounts}
       />
       <ManageSubscriptionModal
         subscription={selectedSubscription}
         open={manageModalOpen}
         onClose={() => setManageModalOpen(false)}
         onCancel={handleCancelSubscription}
+      />
+      <AccountDetailsModal
+        account={selectedAccount}
+        transactions={transactions}
+        open={accountModalOpen}
+        onClose={() => setAccountModalOpen(false)}
+        onUpdateBalance={handleUpdateAccountBalance}
       />
     </div>
   );

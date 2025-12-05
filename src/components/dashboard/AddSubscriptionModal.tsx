@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { X } from 'lucide-react';
-import { Category, CATEGORIES, Subscription } from '@/types/subscription';
+import { Category, CATEGORIES, Subscription, Account } from '@/types/subscription';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -21,14 +20,19 @@ import {
 interface AddSubscriptionModalProps {
   open: boolean;
   onClose: () => void;
-  onAdd: (subscription: Omit<Subscription, 'id'>) => void;
+  onAdd: (subscription: Omit<Subscription, 'id'>, accountId: string) => void;
+  accounts: Account[];
 }
 
-export function AddSubscriptionModal({ open, onClose, onAdd }: AddSubscriptionModalProps) {
+export function AddSubscriptionModal({ open, onClose, onAdd, accounts }: AddSubscriptionModalProps) {
   const [name, setName] = useState('');
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState<Category>('Other');
   const [billingDate, setBillingDate] = useState('');
+  const [accountId, setAccountId] = useState('checking');
+
+  // Filter to only show payment accounts (not budget)
+  const paymentAccounts = accounts.filter(a => a.type !== 'budget');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,13 +45,14 @@ export function AddSubscriptionModal({ open, onClose, onAdd }: AddSubscriptionMo
       category,
       billingDate,
       recurring: true,
-    });
+    }, accountId);
 
     // Reset form
     setName('');
     setAmount('');
     setCategory('Other');
     setBillingDate('');
+    setAccountId('checking');
     onClose();
   };
 
@@ -98,6 +103,20 @@ export function AddSubscriptionModal({ open, onClose, onAdd }: AddSubscriptionMo
               <SelectContent>
                 {CATEGORIES.map(cat => (
                   <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="accountId" className="text-foreground">Pay from Account</Label>
+            <Select value={accountId} onValueChange={setAccountId}>
+              <SelectTrigger className="bg-secondary border-0">
+                <SelectValue placeholder="Select account" />
+              </SelectTrigger>
+              <SelectContent>
+                {paymentAccounts.map(acc => (
+                  <SelectItem key={acc.id} value={acc.id}>{acc.name}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
