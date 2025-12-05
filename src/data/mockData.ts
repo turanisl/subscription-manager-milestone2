@@ -1,5 +1,5 @@
 import { Subscription, Account, Transaction } from '@/types/subscription';
-import { addDays, format, subDays } from 'date-fns';
+import { addDays, format, subDays, subHours } from 'date-fns';
 
 const today = new Date();
 
@@ -20,23 +20,23 @@ export const mockSubscriptions: Subscription[] = [
 ];
 
 export const mockTransactions: Transaction[] = [
-  { id: 't1', date: pastDate(1), name: 'Netflix', category: 'Entertainment', amount: 15.99, type: 'Recurring' },
-  { id: 't2', date: pastDate(3), name: 'Spotify', category: 'Music', amount: 9.99, type: 'Recurring' },
-  { id: 't3', date: pastDate(5), name: 'iCloud+', category: 'Cloud', amount: 2.99, type: 'Recurring' },
-  { id: 't4', date: pastDate(7), name: 'Adobe Creative', category: 'Productivity', amount: 54.99, type: 'Recurring' },
-  { id: 't5', date: pastDate(8), name: 'App Purchase', category: 'Other', amount: 4.99, type: 'One-time' },
-  { id: 't6', date: pastDate(10), name: 'YouTube Premium', category: 'Entertainment', amount: 13.99, type: 'Recurring' },
-  { id: 't7', date: pastDate(12), name: 'Dropbox', category: 'Cloud', amount: 11.99, type: 'Recurring' },
-  { id: 't8', date: pastDate(14), name: 'Apple Music', category: 'Music', amount: 10.99, type: 'Recurring' },
-  { id: 't9', date: pastDate(15), name: 'Notion', category: 'Productivity', amount: 10.00, type: 'Recurring' },
-  { id: 't10', date: pastDate(18), name: 'Disney+', category: 'Entertainment', amount: 7.99, type: 'Recurring' },
+  { id: 't1', date: pastDate(1), name: 'Netflix', category: 'Entertainment', amount: 15.99, type: 'Recurring', accountId: 'checking' },
+  { id: 't2', date: pastDate(3), name: 'Spotify', category: 'Music', amount: 9.99, type: 'Recurring', accountId: 'credit' },
+  { id: 't3', date: pastDate(5), name: 'iCloud+', category: 'Cloud', amount: 2.99, type: 'Recurring', accountId: 'checking' },
+  { id: 't4', date: pastDate(7), name: 'Adobe Creative', category: 'Productivity', amount: 54.99, type: 'Recurring', accountId: 'credit' },
+  { id: 't5', date: pastDate(8), name: 'App Purchase', category: 'Other', amount: 4.99, type: 'One-time', accountId: 'checking' },
+  { id: 't6', date: pastDate(10), name: 'YouTube Premium', category: 'Entertainment', amount: 13.99, type: 'Recurring', accountId: 'checking' },
+  { id: 't7', date: pastDate(12), name: 'Dropbox', category: 'Cloud', amount: 11.99, type: 'Recurring', accountId: 'credit' },
+  { id: 't8', date: pastDate(14), name: 'Apple Music', category: 'Music', amount: 10.99, type: 'Recurring', accountId: 'checking' },
+  { id: 't9', date: pastDate(15), name: 'Notion', category: 'Productivity', amount: 10.00, type: 'Recurring', accountId: 'checking' },
+  { id: 't10', date: pastDate(18), name: 'Disney+', category: 'Entertainment', amount: 7.99, type: 'Recurring', accountId: 'credit' },
 ];
 
 export const mockAccounts: Account[] = [
-  { id: '1', name: 'Checking', balance: 5848, type: 'checking' },
-  { id: '2', name: 'Credit Card', balance: -3001, type: 'credit' },
-  { id: '3', name: 'Savings', balance: 267, type: 'savings' },
-  { id: '4', name: 'Subscriptions Budget', balance: 150, type: 'budget' },
+  { id: 'checking', name: 'Checking', balance: 5848, type: 'checking', updatedAt: subHours(today, 2) },
+  { id: 'credit', name: 'Credit Card', balance: -3001, type: 'credit', updatedAt: subHours(today, 2) },
+  { id: 'savings', name: 'Savings', balance: 267, type: 'savings', updatedAt: subHours(today, 2) },
+  { id: 'budget', name: 'Subscriptions Budget', balance: 150, type: 'budget', updatedAt: subHours(today, 2) },
 ];
 
 export const mockSpendingData = [

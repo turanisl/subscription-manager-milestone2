@@ -86,6 +86,10 @@
     @apply text-[hsl(var(--destructive))];
   }
 
+  .text-warning {
+    @apply text-[hsl(var(--warning))];
+  }
+
   .glass-effect {
     @apply backdrop-blur-sm bg-card/80;
   }

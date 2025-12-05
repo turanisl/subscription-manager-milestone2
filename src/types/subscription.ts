@@ -9,6 +9,17 @@ export type Subscription = {
   recurring: boolean;
 };
 
+
+export type AccountType = 'checking' | 'credit' | 'savings' | 'budget';
+
+export type Account = {
+  id: string;
+  name: string;
+  balance: number;
+  type: AccountType;
+  updatedAt: Date;
+};
+
 export type Transaction = {
   id: string;
   date: string;
@@ -16,13 +27,7 @@ export type Transaction = {
   category: Category;
   amount: number;
   type: 'Recurring' | 'One-time';
-};
-
-export type Account = {
-  id: string;
-  name: string;
-  balance: number;
-  type: 'checking' | 'credit' | 'savings' | 'budget';
+  accountId?: string;
 };
 
 export type View = 'dashboard' | 'recurring' | 'networth' | 'spending' | 'transactions';
