@@ -52,7 +52,9 @@ export function Sidebar({ isOpen, onToggle, currentView, onViewChange, collapsed
           <div className={cn("pt-5 pb-4 transition-all", isCollapsed ? "px-2" : "px-4")}>
             {/* Logo and App Name */}
             <div className={cn("flex items-center mb-4", isCollapsed ? "justify-center" : "gap-3")}>
-              <img src={mintLogo} alt="Mint logo" className={cn("transition-all", isCollapsed ? "w-8 h-8" : "w-10 h-10")} />
+              <div className={cn("bg-sidebar rounded-lg p-1.5 flex items-center justify-center transition-all", isCollapsed ? "w-8 h-8" : "w-10 h-10")}>
+                <img src={mintLogo} alt="Mint logo" className="w-full h-full object-contain" />
+              </div>
               <span className={cn(
                 "text-2xl font-bold text-primary lowercase tracking-tight transition-all",
                 isCollapsed ? "hidden" : "block"
