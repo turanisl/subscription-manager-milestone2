@@ -17,6 +17,7 @@ import { X } from 'lucide-react';
 
 const Index = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [currentView, setCurrentView] = useState<View>('dashboard');
   const [subscriptions, setSubscriptions] = useState<Subscription[]>(mockSubscriptions);
   const [transactions, setTransactions] = useState<Transaction[]>(mockTransactions);
@@ -96,6 +97,8 @@ const Index = () => {
         onToggle={() => setSidebarOpen(!sidebarOpen)}
         currentView={currentView}
         onViewChange={setCurrentView}
+        collapsed={sidebarCollapsed}
+        onCollapseToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
       />
       
       {/* Main Content */}
