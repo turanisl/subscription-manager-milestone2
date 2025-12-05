@@ -1,29 +1,30 @@
 import { useState, useMemo } from 'react';
 import { Sidebar } from '@/components/dashboard/Sidebar';
-import { SpendCard } from '@/components/dashboard/SpendCard';
-import { TransactionsTable } from '@/components/dashboard/TransactionsTable';
 import { AccountsCard } from '@/components/dashboard/AccountsCard';
 import { UpcomingRenewals } from '@/components/dashboard/UpcomingRenewals';
 import { AddSubscriptionModal } from '@/components/dashboard/AddSubscriptionModal';
 import { ManageSubscriptionModal } from '@/components/dashboard/ManageSubscriptionModal';
-import { mockSubscriptions, mockAccounts } from '@/data/mockData';
-import { Subscription, Category } from '@/types/subscription';
+import { DashboardView } from '@/components/views/DashboardView';
+import { RecurringView } from '@/components/views/RecurringView';
+import { NetWorthView } from '@/components/views/NetWorthView';
+import { SpendingView } from '@/components/views/SpendingView';
+import { TransactionsView } from '@/components/views/TransactionsView';
+import { mockSubscriptions, mockAccounts, mockTransactions } from '@/data/mockData';
+import { Subscription, Transaction, Category, View } from '@/types/subscription';
 import { toast } from '@/hooks/use-toast';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { X } from 'lucide-react';
 
 const Index = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [currentView, setCurrentView] = useState<View>('dashboard');
   const [subscriptions, setSubscriptions] = useState<Subscription[]>(mockSubscriptions);
+  const [transactions, setTransactions] = useState<Transaction[]>(mockTransactions);
   const [selectedCategory, setSelectedCategory] = useState<Category | 'All'>('All');
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [manageModalOpen, setManageModalOpen] = useState(false);
   const [selectedSubscription, setSelectedSubscription] = useState<Subscription | null>(null);
   const [cancelledAlert, setCancelledAlert] = useState<string | null>(null);
-
-  const totalSpend = useMemo(() => {
-    return subscriptions.reduce((sum, sub) => sum + sub.amount, 0);
-  }, [subscriptions]);
 
   const handleAddSubscription = (newSub: Omit<Subscription, 'id'>) => {
     const subscription: Subscription = {
@@ -31,6 +32,18 @@ const Index = () => {
       id: Date.now().toString(),
     };
     setSubscriptions(prev => [subscription, ...prev]);
+    
+    // Also add a transaction
+    const transaction: Transaction = {
+      id: `t-${Date.now()}`,
+      date: newSub.billingDate,
+      name: newSub.name,
+      category: newSub.category,
+      amount: newSub.amount,
+      type: newSub.recurring ? 'Recurring' : 'One-time',
+    };
+    setTransactions(prev => [transaction, ...prev]);
+    
     toast({
       title: "Subscription added",
       description: `${subscription.name} has been added to your subscriptions.`,
@@ -51,9 +64,39 @@ const Index = () => {
     }
   };
 
+  const renderView = () => {
+    switch (currentView) {
+      case 'dashboard':
+        return (
+          <DashboardView
+            subscriptions={subscriptions}
+            transactions={transactions}
+            selectedCategory={selectedCategory}
+            onCategoryChange={setSelectedCategory}
+            onAddClick={() => setAddModalOpen(true)}
+          />
+        );
+      case 'recurring':
+        return <RecurringView subscriptions={subscriptions} />;
+      case 'networth':
+        return <NetWorthView accounts={mockAccounts} />;
+      case 'spending':
+        return <SpendingView transactions={transactions} />;
+      case 'transactions':
+        return <TransactionsView transactions={transactions} />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background flex">
-      <Sidebar isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
+      <Sidebar 
+        isOpen={sidebarOpen} 
+        onToggle={() => setSidebarOpen(!sidebarOpen)}
+        currentView={currentView}
+        onViewChange={setCurrentView}
+      />
       
       {/* Main Content */}
       <div className="flex-1 flex flex-col lg:flex-row min-h-screen">
@@ -77,25 +120,7 @@ const Index = () => {
             </Alert>
           )}
 
-          {/* Greeting */}
-          <div className="mb-6">
-            <h1 className="text-2xl lg:text-3xl font-bold text-foreground">
-              Good morning, Turan!
-            </h1>
-          </div>
-
-          {/* Spend Card */}
-          <div className="mb-8">
-            <SpendCard totalSpend={totalSpend} />
-          </div>
-
-          {/* Transactions */}
-          <TransactionsTable
-            subscriptions={subscriptions}
-            selectedCategory={selectedCategory}
-            onCategoryChange={setSelectedCategory}
-            onAddClick={() => setAddModalOpen(true)}
-          />
+          {renderView()}
         </main>
 
         {/* Right Sidebar */}
