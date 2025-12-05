@@ -1,4 +1,4 @@
-import { LayoutDashboard, RefreshCw, TrendingUp, PieChart, Receipt, Menu, X, MessageCircle } from 'lucide-react';
+import { LayoutDashboard, RefreshCw, TrendingUp, PieChart, Receipt, Menu, X, MessageCircle, Bell, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { View } from '@/types/subscription';
 import { toast } from '@/hooks/use-toast';
@@ -34,92 +34,109 @@ export function Sidebar({ isOpen, onToggle, currentView, onViewChange }: Sidebar
       <aside
         className={cn(
           "fixed left-0 top-0 h-full bg-sidebar z-50 flex flex-col transition-all duration-300 border-r border-sidebar-border",
-          isOpen ? "w-64" : "w-0 lg:w-16",
+          isOpen ? "w-64" : "w-0 lg:w-64",
           "lg:relative"
         )}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 h-16">
-          <div className={cn(
-            "flex items-center gap-2 transition-opacity duration-200",
-            isOpen ? "opacity-100" : "opacity-0 lg:hidden"
-          )}>
-            <img src={mintLogo} alt="Mint logo" className="w-8 h-8 rounded-lg" />
-            <h1 className="font-semibold text-xl text-primary">Mint</h1>
-          </div>
-          {/* Show icon only when collapsed on desktop */}
-          <div className={cn(
-            "hidden lg:flex items-center justify-center transition-opacity duration-200",
-            isOpen ? "lg:hidden" : "opacity-100"
-          )}>
-            <img src={mintLogo} alt="Mint logo" className="w-8 h-8 rounded-lg" />
-          </div>
-          <button 
-            onClick={onToggle}
-            className="p-2 rounded-lg hover:bg-sidebar-accent text-sidebar-foreground lg:hidden"
-            aria-label="Close sidebar"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Navigation */}
-        <nav className="flex-1 px-3 py-4 space-y-1 overflow-hidden">
-          {navItems.map((item) => {
-            const isActive = currentView === item.view;
-            return (
-              <button
-                key={item.view}
-                onClick={() => onViewChange(item.view)}
-                className={cn(
-                  "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 relative",
-                  isActive
-                    ? "bg-sidebar-accent text-sidebar-primary font-medium"
-                    : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
-                )}
-              >
-                {isActive && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full" />
-                )}
-                <item.icon className="w-5 h-5 flex-shrink-0" />
-                <span className={cn(
-                  "whitespace-nowrap transition-opacity duration-200",
-                  isOpen ? "opacity-100" : "opacity-0 lg:hidden"
-                )}>
-                  {item.label}
-                </span>
-              </button>
-            );
-          })}
-        </nav>
-
-        {/* Quote */}
         <div className={cn(
-          "px-4 py-6 transition-opacity duration-200",
-          isOpen ? "opacity-100" : "opacity-0 hidden lg:hidden"
+          "flex flex-col h-full overflow-hidden",
+          isOpen ? "opacity-100" : "opacity-0 lg:opacity-100"
         )}>
-          <p className="text-xs text-muted-foreground italic leading-relaxed">
-            "Small choices add up over time."
-          </p>
-        </div>
+          {/* Top Branding Area */}
+          <div className="px-4 pt-5 pb-4">
+            {/* Logo and App Name */}
+            <div className="flex items-center gap-3 mb-4">
+              <img src={mintLogo} alt="Mint logo" className="w-10 h-10" />
+              <span className="text-2xl font-bold text-primary lowercase tracking-tight">mint</span>
+              {/* Mobile close button */}
+              <button 
+                onClick={onToggle}
+                className="ml-auto p-2 rounded-lg hover:bg-sidebar-accent text-sidebar-foreground lg:hidden"
+                aria-label="Close sidebar"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            {/* User Section */}
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-foreground">Turan Islamli</p>
+                <p className="text-xs text-muted-foreground">Premium Member</p>
+              </div>
+              <div className="flex items-center gap-1">
+                <button 
+                  onClick={() => toast({ title: "Notifications", description: "No new notifications" })}
+                  className="p-2 rounded-lg hover:bg-sidebar-accent text-muted-foreground hover:text-foreground transition-colors"
+                  aria-label="Notifications"
+                >
+                  <Bell className="w-4 h-4" />
+                </button>
+                <button 
+                  onClick={() => toast({ title: "Settings", description: "Settings coming soon!" })}
+                  className="p-2 rounded-lg hover:bg-sidebar-accent text-muted-foreground hover:text-foreground transition-colors"
+                  aria-label="Settings"
+                >
+                  <Settings className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
 
-        {/* Footer */}
-        <div className="p-4 border-t border-sidebar-border">
-          <button 
-            onClick={() => toast({ title: "Help", description: "Support coming soon!" })}
-            className={cn(
-              "flex items-center gap-3 text-sm text-muted-foreground hover:text-sidebar-foreground transition-colors",
-              !isOpen && "lg:justify-center"
-            )}
-          >
-            <MessageCircle className="w-4 h-4 flex-shrink-0" />
-            <span className={cn(
-              "transition-opacity duration-200",
-              isOpen ? "opacity-100" : "opacity-0 lg:hidden"
-            )}>
-              Contact / Help
-            </span>
-          </button>
+          {/* Divider */}
+          <div className="mx-4 border-t border-sidebar-border" />
+
+          {/* Navigation */}
+          <nav className="flex-1 px-3 py-4 space-y-1">
+            {navItems.map((item) => {
+              const isActive = currentView === item.view;
+              return (
+                <button
+                  key={item.view}
+                  onClick={() => onViewChange(item.view)}
+                  className={cn(
+                    "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 relative",
+                    isActive
+                      ? "bg-sidebar-accent text-primary font-medium"
+                      : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
+                  )}
+                >
+                  {isActive && (
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full" />
+                  )}
+                  <item.icon className={cn(
+                    "w-5 h-5 flex-shrink-0",
+                    isActive ? "text-primary" : "text-muted-foreground"
+                  )} />
+                  <span className="whitespace-nowrap">{item.label}</span>
+                </button>
+              );
+            })}
+          </nav>
+
+          {/* Quote Section */}
+          <div className="px-4 py-4">
+            <div className="bg-sidebar-accent/50 rounded-lg p-4">
+              <p className="text-xs text-foreground/80 italic leading-relaxed mb-2">
+                "Setting goals is the first step in turning the invisible into the visible."
+              </p>
+              <p className="text-[10px] text-muted-foreground">— Tony Robbins</p>
+            </div>
+          </div>
+
+          {/* Divider */}
+          <div className="mx-4 border-t border-sidebar-border" />
+
+          {/* Chat with us - Bottom */}
+          <div className="p-4 mt-auto">
+            <button 
+              onClick={() => toast({ title: "Chat", description: "Chat coming soon." })}
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground transition-colors"
+            >
+              <MessageCircle className="w-5 h-5 text-muted-foreground" />
+              <span className="text-sm">Chat with us</span>
+            </button>
+          </div>
         </div>
       </aside>
 
