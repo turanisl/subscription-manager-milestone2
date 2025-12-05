@@ -1,30 +1,25 @@
-import { LayoutDashboard, CreditCard, TrendingUp, FileText, MessageCircle, Menu, X } from 'lucide-react';
+import { LayoutDashboard, RefreshCw, TrendingUp, PieChart, Receipt, Menu, X, MessageCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useState } from 'react';
+import { View } from '@/types/subscription';
 import { toast } from '@/hooks/use-toast';
+import mintLogo from '@/assets/mint-logo.png';
 
-const navItems = [
-  { icon: LayoutDashboard, label: 'Dashboard', active: true },
-  { icon: CreditCard, label: 'Subscriptions', active: false },
-  { icon: TrendingUp, label: 'Spending', active: false },
-  { icon: FileText, label: 'Reports', active: false },
+const navItems: { icon: typeof LayoutDashboard; label: string; view: View }[] = [
+  { icon: LayoutDashboard, label: 'Dashboard', view: 'dashboard' },
+  { icon: RefreshCw, label: 'Recurring', view: 'recurring' },
+  { icon: TrendingUp, label: 'Net Worth', view: 'networth' },
+  { icon: PieChart, label: 'Spending', view: 'spending' },
+  { icon: Receipt, label: 'Transactions', view: 'transactions' },
 ];
 
 interface SidebarProps {
   isOpen: boolean;
   onToggle: () => void;
+  currentView: View;
+  onViewChange: (view: View) => void;
 }
 
-export function Sidebar({ isOpen, onToggle }: SidebarProps) {
-  const handleNavClick = (label: string, active: boolean) => {
-    if (!active) {
-      toast({
-        title: `${label} coming soon`,
-        description: "This section is under development.",
-      });
-    }
-  };
-
+export function Sidebar({ isOpen, onToggle, currentView, onViewChange }: SidebarProps) {
   return (
     <>
       {/* Mobile overlay */}
@@ -45,12 +40,20 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 h-16">
-          <h1 className={cn(
-            "font-semibold text-xl text-primary transition-opacity duration-200",
+          <div className={cn(
+            "flex items-center gap-2 transition-opacity duration-200",
             isOpen ? "opacity-100" : "opacity-0 lg:hidden"
           )}>
-            SubTrack
-          </h1>
+            <img src={mintLogo} alt="Mint logo" className="w-8 h-8 rounded-lg" />
+            <h1 className="font-semibold text-xl text-primary">Mint</h1>
+          </div>
+          {/* Show icon only when collapsed on desktop */}
+          <div className={cn(
+            "hidden lg:flex items-center justify-center transition-opacity duration-200",
+            isOpen ? "lg:hidden" : "opacity-100"
+          )}>
+            <img src={mintLogo} alt="Mint logo" className="w-8 h-8 rounded-lg" />
+          </div>
           <button 
             onClick={onToggle}
             className="p-2 rounded-lg hover:bg-sidebar-accent text-sidebar-foreground lg:hidden"
@@ -62,26 +65,32 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
 
         {/* Navigation */}
         <nav className="flex-1 px-3 py-4 space-y-1 overflow-hidden">
-          {navItems.map((item) => (
-            <button
-              key={item.label}
-              onClick={() => handleNavClick(item.label, item.active)}
-              className={cn(
-                "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200",
-                item.active
-                  ? "bg-sidebar-accent text-sidebar-primary font-medium"
-                  : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
-              )}
-            >
-              <item.icon className="w-5 h-5 flex-shrink-0" />
-              <span className={cn(
-                "whitespace-nowrap transition-opacity duration-200",
-                isOpen ? "opacity-100" : "opacity-0 lg:hidden"
-              )}>
-                {item.label}
-              </span>
-            </button>
-          ))}
+          {navItems.map((item) => {
+            const isActive = currentView === item.view;
+            return (
+              <button
+                key={item.view}
+                onClick={() => onViewChange(item.view)}
+                className={cn(
+                  "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 relative",
+                  isActive
+                    ? "bg-sidebar-accent text-sidebar-primary font-medium"
+                    : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
+                )}
+              >
+                {isActive && (
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full" />
+                )}
+                <item.icon className="w-5 h-5 flex-shrink-0" />
+                <span className={cn(
+                  "whitespace-nowrap transition-opacity duration-200",
+                  isOpen ? "opacity-100" : "opacity-0 lg:hidden"
+                )}>
+                  {item.label}
+                </span>
+              </button>
+            );
+          })}
         </nav>
 
         {/* Quote */}

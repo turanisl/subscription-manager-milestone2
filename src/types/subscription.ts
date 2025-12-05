@@ -9,12 +9,23 @@ export type Subscription = {
   recurring: boolean;
 };
 
+export type Transaction = {
+  id: string;
+  date: string;
+  name: string;
+  category: Category;
+  amount: number;
+  type: 'Recurring' | 'One-time';
+};
+
 export type Account = {
   id: string;
   name: string;
   balance: number;
   type: 'checking' | 'credit' | 'savings' | 'budget';
 };
+
+export type View = 'dashboard' | 'recurring' | 'networth' | 'spending' | 'transactions';
 
 export const CATEGORIES: Category[] = ['Entertainment', 'Music', 'Productivity', 'Cloud', 'Other'];
 
