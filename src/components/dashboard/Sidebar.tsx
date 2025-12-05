@@ -87,7 +87,7 @@ export function Sidebar({ isOpen, onToggle, currentView, onViewChange }: Sidebar
           <div className="mx-4 border-t border-sidebar-border" />
 
           {/* Navigation */}
-          <nav className="flex-1 px-3 py-4 space-y-1">
+          <nav className="px-3 py-4 space-y-1">
             {navItems.map((item) => {
               const isActive = currentView === item.view;
               return (
@@ -114,28 +114,34 @@ export function Sidebar({ isOpen, onToggle, currentView, onViewChange }: Sidebar
             })}
           </nav>
 
-          {/* Quote Section */}
-          <div className="px-4 py-4">
-            <div className="bg-sidebar-accent/50 rounded-lg p-4">
-              <p className="text-xs text-foreground/80 italic leading-relaxed mb-2">
-                "Setting goals is the first step in turning the invisible into the visible."
-              </p>
-              <p className="text-[10px] text-muted-foreground">— Tony Robbins</p>
+          {/* Spacer to push bottom section down */}
+          <div className="flex-1" />
+
+          {/* Bottom Section - Quote + Chat */}
+          <div className="mt-auto">
+            {/* Quote Section */}
+            <div className="px-4 pb-4">
+              <div className="bg-sidebar-accent/50 rounded-lg p-4">
+                <p className="text-xs text-foreground/80 italic leading-relaxed mb-2">
+                  "Setting goals is the first step in turning the invisible into the visible."
+                </p>
+                <p className="text-[10px] text-muted-foreground">— Tony Robbins</p>
+              </div>
             </div>
-          </div>
 
-          {/* Divider */}
-          <div className="mx-4 border-t border-sidebar-border" />
+            {/* Divider */}
+            <div className="mx-4 border-t border-sidebar-border" />
 
-          {/* Chat with us - Bottom */}
-          <div className="p-4 mt-auto">
-            <button 
-              onClick={() => toast({ title: "Chat", description: "Chat coming soon." })}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground transition-colors"
-            >
-              <MessageCircle className="w-5 h-5 text-muted-foreground" />
-              <span className="text-sm">Chat with us</span>
-            </button>
+            {/* Chat with us */}
+            <div className="p-4">
+              <button 
+                onClick={() => toast({ title: "Chat", description: "Chat coming soon." })}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground transition-colors"
+              >
+                <MessageCircle className="w-5 h-5 text-muted-foreground" />
+                <span className="text-sm">Chat with us</span>
+              </button>
+            </div>
           </div>
         </div>
       </aside>
