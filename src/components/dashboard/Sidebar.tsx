@@ -1,7 +1,7 @@
 import { LayoutDashboard, RefreshCw, TrendingUp, PieChart, Receipt, Menu, X, MessageCircle, Bell, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { View } from '@/types/subscription';
-import { toast } from '@/hooks/use-toast';
+import { PanelType } from '@/types/panel';
 import mintLogo from '@/assets/mint-logo.png';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 
@@ -20,9 +20,11 @@ interface SidebarProps {
   onViewChange: (view: View) => void;
   collapsed: boolean;
   onCollapseToggle: () => void;
+  onPanelOpen: (panel: PanelType) => void;
+  hasUnreadNotifications?: boolean;
 }
 
-export function Sidebar({ isOpen, onToggle, currentView, onViewChange, collapsed, onCollapseToggle }: SidebarProps) {
+export function Sidebar({ isOpen, onToggle, currentView, onViewChange, collapsed, onCollapseToggle, onPanelOpen, hasUnreadNotifications = false }: SidebarProps) {
   const isCollapsed = collapsed && !isOpen;
 
   return (
@@ -81,15 +83,18 @@ export function Sidebar({ isOpen, onToggle, currentView, onViewChange, collapsed
                 </div>
                 <div className="flex items-center gap-1">
                   <button 
-                    onClick={() => toast({ title: "Notifications", description: "No new notifications" })}
-                    className="p-2 rounded-lg hover:bg-sidebar-accent text-muted-foreground hover:text-foreground transition-colors"
+                    onClick={() => onPanelOpen('notifications')}
+                    className="relative p-2 rounded-lg hover:bg-sidebar-accent text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                     aria-label="Notifications"
                   >
                     <Bell className="w-4 h-4" />
+                    {hasUnreadNotifications && (
+                      <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary" />
+                    )}
                   </button>
                   <button 
-                    onClick={() => toast({ title: "Settings", description: "Settings coming soon!" })}
-                    className="p-2 rounded-lg hover:bg-sidebar-accent text-muted-foreground hover:text-foreground transition-colors"
+                    onClick={() => onPanelOpen('settings')}
+                    className="p-2 rounded-lg hover:bg-sidebar-accent text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                     aria-label="Settings"
                   >
                     <Settings className="w-4 h-4" />
@@ -169,8 +174,8 @@ export function Sidebar({ isOpen, onToggle, currentView, onViewChange, collapsed
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <button 
-                      onClick={() => toast({ title: "Chat", description: "Chat coming soon." })}
-                      className="w-full flex items-center justify-center p-2.5 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground transition-colors"
+                      onClick={() => onPanelOpen('chat')}
+                      className="w-full flex items-center justify-center p-2.5 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground transition-colors cursor-pointer"
                     >
                       <MessageCircle className="w-5 h-5 text-muted-foreground" />
                     </button>
@@ -181,8 +186,8 @@ export function Sidebar({ isOpen, onToggle, currentView, onViewChange, collapsed
                 </Tooltip>
               ) : (
                 <button 
-                  onClick={() => toast({ title: "Chat", description: "Chat coming soon." })}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground transition-colors"
+                  onClick={() => onPanelOpen('chat')}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground transition-colors cursor-pointer"
                 >
                   <MessageCircle className="w-5 h-5 text-muted-foreground" />
                   <span className="text-sm">Chat with us</span>

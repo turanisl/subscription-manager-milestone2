@@ -5,6 +5,9 @@ import { AccountDetailsModal } from '@/components/dashboard/AccountDetailsModal'
 import { UpcomingRenewals } from '@/components/dashboard/UpcomingRenewals';
 import { AddSubscriptionModal } from '@/components/dashboard/AddSubscriptionModal';
 import { ManageSubscriptionModal } from '@/components/dashboard/ManageSubscriptionModal';
+import { NotificationsPanel } from '@/components/panels/NotificationsPanel';
+import { SettingsPanel } from '@/components/panels/SettingsPanel';
+import { ChatPanel } from '@/components/panels/ChatPanel';
 import { DashboardView } from '@/components/views/DashboardView';
 import { RecurringView } from '@/components/views/RecurringView';
 import { NetWorthView } from '@/components/views/NetWorthView';
@@ -12,6 +15,7 @@ import { SpendingView } from '@/components/views/SpendingView';
 import { TransactionsView } from '@/components/views/TransactionsView';
 import { mockSubscriptions, mockAccounts, mockTransactions } from '@/data/mockData';
 import { Subscription, Transaction, Category, View, Account } from '@/types/subscription';
+import { PanelType, Notification, AppSettings } from '@/types/panel';
 import { toast } from '@/hooks/use-toast';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { X } from 'lucide-react';
@@ -30,6 +34,26 @@ const Index = () => {
   const [cancelledAlert, setCancelledAlert] = useState<string | null>(null);
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
   const [accountModalOpen, setAccountModalOpen] = useState(false);
+  
+  // Panel state
+  const [openPanel, setOpenPanel] = useState<PanelType>(null);
+  const [notifications, setNotifications] = useState<Notification[]>([
+    { id: '1', title: 'Upcoming charge', message: 'Spotify renews tomorrow for $9.99.', time: '2h ago', read: false },
+    { id: '2', title: 'New subscription added', message: 'You added Netflix for $15.99/month.', time: '1d ago', read: true },
+    { id: '3', title: 'Budget reminder', message: 'You are close to your subscriptions budget.', time: '3d ago', read: false },
+  ]);
+  const [settings, setSettings] = useState<AppSettings>({
+    isDarkMode: true,
+    currency: 'USD',
+    emailOnRenewal: true,
+    notifyOnBudgetExceed: true,
+  });
+  
+  const hasUnreadNotifications = notifications.some(n => !n.read);
+  
+  const handleMarkAllRead = useCallback(() => {
+    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+  }, []);
 
   const updateAccountBalance = useCallback((accountId: string, amount: number, isDeduction: boolean = true) => {
     setAccounts(prev => prev.map(acc => {
@@ -138,6 +162,8 @@ const Index = () => {
         onViewChange={setCurrentView}
         collapsed={sidebarCollapsed}
         onCollapseToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+        onPanelOpen={setOpenPanel}
+        hasUnreadNotifications={hasUnreadNotifications}
       />
       
       {/* Main Content */}
@@ -198,6 +224,25 @@ const Index = () => {
         open={accountModalOpen}
         onClose={() => setAccountModalOpen(false)}
         onUpdateBalance={handleUpdateAccountBalance}
+      />
+      
+      {/* Panels */}
+      <NotificationsPanel
+        open={openPanel === 'notifications'}
+        onClose={() => setOpenPanel(null)}
+        notifications={notifications}
+        onMarkAllRead={handleMarkAllRead}
+      />
+      <SettingsPanel
+        open={openPanel === 'settings'}
+        onClose={() => setOpenPanel(null)}
+        settings={settings}
+        onSettingsChange={setSettings}
+      />
+      <ChatPanel
+        open={openPanel === 'chat'}
+        onClose={() => setOpenPanel(null)}
+        userName="Turan Islamli"
       />
     </div>
   );
