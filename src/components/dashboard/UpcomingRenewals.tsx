@@ -14,6 +14,8 @@ export function UpcomingRenewals({ subscriptions, onManage }: UpcomingRenewalsPr
   
   const upcomingRenewals = subscriptions
     .filter(sub => {
+      // Only show active subscriptions in upcoming renewals
+      if (sub.status !== 'active') return false;
       const billingDate = new Date(sub.billingDate);
       return billingDate >= today && billingDate <= sevenDaysFromNow;
     })
@@ -24,7 +26,9 @@ export function UpcomingRenewals({ subscriptions, onManage }: UpcomingRenewalsPr
   const calendarDates = Array.from({ length: 14 }, (_, i) => addDays(weekStart, i));
 
   const hasRenewalOnDate = (date: Date) => {
-    return subscriptions.some(sub => isSameDay(new Date(sub.billingDate), date));
+    return subscriptions.some(sub => 
+      sub.status === 'active' && isSameDay(new Date(sub.billingDate), date)
+    );
   };
 
   return (
