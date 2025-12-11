@@ -106,14 +106,81 @@ const Index = () => {
     setManageModalOpen(true);
   };
 
-  const handleCancelSubscription = (id: string) => {
+  const handlePauseSubscription = useCallback((id: string, pausedUntil: string) => {
+    setSubscriptions(prev => prev.map(sub => {
+      if (sub.id === id) {
+        return { ...sub, status: 'paused' as const, pausedUntil };
+      }
+      return sub;
+    }));
+    
     const sub = subscriptions.find(s => s.id === id);
     if (sub) {
-      setSubscriptions(prev => prev.filter(s => s.id !== id));
+      const pauseDate = new Date(pausedUntil);
+      setNotifications(prev => [{
+        id: `n-${Date.now()}`,
+        title: 'Subscription paused',
+        message: `Paused ${sub.name} until ${pauseDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}.`,
+        time: 'Just now',
+        read: false,
+      }, ...prev]);
+    }
+    
+    toast({
+      title: "Subscription paused",
+      description: `The subscription has been paused.`,
+    });
+  }, [subscriptions]);
+
+  const handleResumeSubscription = useCallback((id: string) => {
+    setSubscriptions(prev => prev.map(sub => {
+      if (sub.id === id) {
+        const { pausedUntil, ...rest } = sub;
+        return { ...rest, status: 'active' as const };
+      }
+      return sub;
+    }));
+    
+    const sub = subscriptions.find(s => s.id === id);
+    if (sub) {
+      setNotifications(prev => [{
+        id: `n-${Date.now()}`,
+        title: 'Subscription resumed',
+        message: `Resumed ${sub.name}.`,
+        time: 'Just now',
+        read: false,
+      }, ...prev]);
+    }
+    
+    toast({
+      title: "Subscription resumed",
+      description: `The subscription is now active.`,
+    });
+  }, [subscriptions]);
+
+  const handleCancelSubscription = useCallback((id: string) => {
+    const sub = subscriptions.find(s => s.id === id);
+    
+    setSubscriptions(prev => prev.map(s => {
+      if (s.id === id) {
+        return { ...s, status: 'cancelled' as const, pausedUntil: undefined };
+      }
+      return s;
+    }));
+    
+    if (sub) {
       setCancelledAlert(sub.name);
       setTimeout(() => setCancelledAlert(null), 5000);
+      
+      setNotifications(prev => [{
+        id: `n-${Date.now()}`,
+        title: 'Subscription cancelled',
+        message: `Cancelled ${sub.name}.`,
+        time: 'Just now',
+        read: false,
+      }, ...prev]);
     }
-  };
+  }, [subscriptions]);
 
   const handleAccountClick = (account: Account) => {
     setSelectedAccount(account);
@@ -141,7 +208,14 @@ const Index = () => {
           />
         );
       case 'recurring':
-        return <RecurringView subscriptions={subscriptions} />;
+        return (
+          <RecurringView 
+            subscriptions={subscriptions} 
+            onPause={handlePauseSubscription}
+            onResume={handleResumeSubscription}
+            onCancel={handleCancelSubscription}
+          />
+        );
       case 'networth':
         return <NetWorthView accounts={accounts} />;
       case 'spending':

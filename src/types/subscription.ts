@@ -1,5 +1,7 @@
 export type Category = 'Entertainment' | 'Music' | 'Productivity' | 'Cloud' | 'Other';
 
+export type SubscriptionStatus = 'active' | 'paused' | 'cancelled';
+
 export type Subscription = {
   id: string;
   name: string;
@@ -7,6 +9,8 @@ export type Subscription = {
   amount: number;
   billingDate: string;
   recurring: boolean;
+  status: SubscriptionStatus;
+  pausedUntil?: string;
 };
 
 
