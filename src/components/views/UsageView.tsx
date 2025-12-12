@@ -23,9 +23,11 @@ export function UsageView({ subscriptions, onAddNotification }: UsageViewProps) 
   const [selectedSub, setSelectedSub] = useState<Subscription | null>(null);
 
   const activeSubscriptions = useMemo(() => 
-    subscriptions.filter(s => s.status === 'active'),
+    subscriptions.filter(s => s.status === 'active' && s.usage),
     [subscriptions]
   );
+
+  const getUsage = (sub: Subscription) => sub.usage?.usesLast30Days ?? 0;
 
   const getUsageTag = (uses: number): UsageTag => {
     if (uses === 0) return 'never-used';
@@ -40,18 +42,18 @@ export function UsageView({ subscriptions, onAddNotification }: UsageViewProps) 
 
   const mostUsed = useMemo(() => 
     [...activeSubscriptions]
-      .sort((a, b) => b.usage.usesLast30Days - a.usage.usesLast30Days)
+      .sort((a, b) => getUsage(b) - getUsage(a))
       .slice(0, 3),
     [activeSubscriptions]
   );
 
   const barelyUsed = useMemo(() => 
-    activeSubscriptions.filter(s => s.usage.usesLast30Days >= 1 && s.usage.usesLast30Days <= 3),
+    activeSubscriptions.filter(s => getUsage(s) >= 1 && getUsage(s) <= 3),
     [activeSubscriptions]
   );
 
   const neverUsed = useMemo(() => 
-    activeSubscriptions.filter(s => s.usage.usesLast30Days === 0),
+    activeSubscriptions.filter(s => getUsage(s) === 0),
     [activeSubscriptions]
   );
 
@@ -59,15 +61,15 @@ export function UsageView({ subscriptions, onAddNotification }: UsageViewProps) 
     const sorted = [...activeSubscriptions];
     switch (sortBy) {
       case 'most-used':
-        return sorted.sort((a, b) => b.usage.usesLast30Days - a.usage.usesLast30Days);
+        return sorted.sort((a, b) => getUsage(b) - getUsage(a));
       case 'cost-per-use':
         return sorted.sort((a, b) => {
-          const costA = a.usage.usesLast30Days > 0 ? a.amount / a.usage.usesLast30Days : Infinity;
-          const costB = b.usage.usesLast30Days > 0 ? b.amount / b.usage.usesLast30Days : Infinity;
+          const costA = getUsage(a) > 0 ? a.amount / getUsage(a) : Infinity;
+          const costB = getUsage(b) > 0 ? b.amount / getUsage(b) : Infinity;
           return costB - costA;
         });
       case 'never-used':
-        return sorted.sort((a, b) => a.usage.usesLast30Days - b.usage.usesLast30Days);
+        return sorted.sort((a, b) => getUsage(a) - getUsage(b));
       default:
         return sorted;
     }
@@ -89,7 +91,7 @@ export function UsageView({ subscriptions, onAddNotification }: UsageViewProps) 
   };
 
   const getReviewMessage = (sub: Subscription): string => {
-    const uses = sub.usage.usesLast30Days;
+    const uses = getUsage(sub);
     if (uses === 0) return "You haven't used this in 30 days.";
     if (uses <= 3) return `You used this only ${uses} time${uses > 1 ? 's' : ''}.`;
     return "This is one of your most used subscriptions.";
