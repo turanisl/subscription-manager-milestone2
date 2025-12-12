@@ -10,7 +10,7 @@ import { SettingsPanel } from '@/components/panels/SettingsPanel';
 import { ChatPanel } from '@/components/panels/ChatPanel';
 import { DashboardView } from '@/components/views/DashboardView';
 import { RecurringView } from '@/components/views/RecurringView';
-import { NetWorthView } from '@/components/views/NetWorthView';
+import { UsageView } from '@/components/views/UsageView';
 import { SpendingView } from '@/components/views/SpendingView';
 import { TransactionsView } from '@/components/views/TransactionsView';
 import { mockSubscriptions, mockAccounts, mockTransactions } from '@/data/mockData';
@@ -216,8 +216,19 @@ const Index = () => {
             onCancel={handleCancelSubscription}
           />
         );
-      case 'networth':
-        return <NetWorthView accounts={accounts} />;
+      case 'usage':
+        return (
+          <UsageView 
+            subscriptions={subscriptions}
+            onAddNotification={(n) => setNotifications(prev => [{
+              id: `n-${Date.now()}`,
+              title: n.title,
+              message: n.message,
+              time: 'Just now',
+              read: false,
+            }, ...prev])}
+          />
+        );
       case 'spending':
         return <SpendingView transactions={transactions} />;
       case 'transactions':

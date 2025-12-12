@@ -7,16 +7,16 @@ const billingDate = (daysFromNow: number) => format(addDays(today, daysFromNow),
 const pastDate = (daysAgo: number) => format(subDays(today, daysAgo), 'yyyy-MM-dd');
 
 export const mockSubscriptions: Subscription[] = [
-  { id: '1', name: 'Netflix', category: 'Entertainment', amount: 15.99, billingDate: billingDate(9), recurring: true, status: 'active' },
-  { id: '2', name: 'Spotify', category: 'Music', amount: 9.99, billingDate: billingDate(3), recurring: true, status: 'active' },
-  { id: '3', name: 'Notion', category: 'Productivity', amount: 10.00, billingDate: billingDate(12), recurring: true, status: 'active' },
-  { id: '4', name: 'iCloud+', category: 'Cloud', amount: 2.99, billingDate: billingDate(-2), recurring: true, status: 'active' },
-  { id: '5', name: 'Adobe Creative', category: 'Productivity', amount: 54.99, billingDate: billingDate(15), recurring: true, status: 'active' },
-  { id: '6', name: 'YouTube Premium', category: 'Entertainment', amount: 13.99, billingDate: billingDate(6), recurring: true, status: 'active' },
-  { id: '7', name: 'Dropbox', category: 'Cloud', amount: 11.99, billingDate: billingDate(18), recurring: true, status: 'active' },
-  { id: '8', name: 'Apple Music', category: 'Music', amount: 10.99, billingDate: billingDate(-5), recurring: true, status: 'active' },
-  { id: '9', name: 'Disney+', category: 'Entertainment', amount: 7.99, billingDate: billingDate(11), recurring: true, status: 'active' },
-  { id: '10', name: 'ChatGPT Plus', category: 'Productivity', amount: 20.00, billingDate: billingDate(20), recurring: true, status: 'active' },
+  { id: '1', name: 'Netflix', category: 'Entertainment', amount: 15.99, billingDate: billingDate(9), recurring: true, status: 'active', usage: { lastUsedAt: pastDate(1), usesLast30Days: 25, minutesLast30Days: 1200 } },
+  { id: '2', name: 'Spotify', category: 'Music', amount: 9.99, billingDate: billingDate(3), recurring: true, status: 'active', usage: { lastUsedAt: pastDate(0), usesLast30Days: 45, minutesLast30Days: 2400 } },
+  { id: '3', name: 'Notion', category: 'Productivity', amount: 10.00, billingDate: billingDate(12), recurring: true, status: 'active', usage: { lastUsedAt: pastDate(2), usesLast30Days: 18 } },
+  { id: '4', name: 'iCloud+', category: 'Cloud', amount: 2.99, billingDate: billingDate(-2), recurring: true, status: 'active', usage: { lastUsedAt: pastDate(15), usesLast30Days: 2 } },
+  { id: '5', name: 'Adobe Creative', category: 'Productivity', amount: 54.99, billingDate: billingDate(15), recurring: true, status: 'active', usage: { lastUsedAt: pastDate(30), usesLast30Days: 0 } },
+  { id: '6', name: 'YouTube Premium', category: 'Entertainment', amount: 13.99, billingDate: billingDate(6), recurring: true, status: 'active', usage: { lastUsedAt: pastDate(3), usesLast30Days: 12, minutesLast30Days: 480 } },
+  { id: '7', name: 'Dropbox', category: 'Cloud', amount: 11.99, billingDate: billingDate(18), recurring: true, status: 'active', usage: { usesLast30Days: 0 } },
+  { id: '8', name: 'Apple Music', category: 'Music', amount: 10.99, billingDate: billingDate(-5), recurring: true, status: 'active', usage: { lastUsedAt: pastDate(20), usesLast30Days: 1, minutesLast30Days: 30 } },
+  { id: '9', name: 'Disney+', category: 'Entertainment', amount: 7.99, billingDate: billingDate(11), recurring: true, status: 'active', usage: { lastUsedAt: pastDate(5), usesLast30Days: 8, minutesLast30Days: 360 } },
+  { id: '10', name: 'ChatGPT Plus', category: 'Productivity', amount: 20.00, billingDate: billingDate(20), recurring: true, status: 'active', usage: { lastUsedAt: pastDate(0), usesLast30Days: 35 } },
 ];
 
 export const mockTransactions: Transaction[] = [

@@ -46,6 +46,7 @@ export function AddSubscriptionModal({ open, onClose, onAdd, accounts }: AddSubs
       billingDate,
       recurring: true,
       status: 'active',
+      usage: { usesLast30Days: 0 },
     }, accountId);
 
     // Reset form
