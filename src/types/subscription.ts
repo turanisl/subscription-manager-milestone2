@@ -2,6 +2,12 @@ export type Category = 'Entertainment' | 'Music' | 'Productivity' | 'Cloud' | 'O
 
 export type SubscriptionStatus = 'active' | 'paused' | 'cancelled';
 
+export type SubscriptionUsage = {
+  lastUsedAt?: string;
+  usesLast30Days: number;
+  minutesLast30Days?: number;
+};
+
 export type Subscription = {
   id: string;
   name: string;
@@ -11,6 +17,7 @@ export type Subscription = {
   recurring: boolean;
   status: SubscriptionStatus;
   pausedUntil?: string;
+  usage: SubscriptionUsage;
 };
 
 
@@ -34,7 +41,7 @@ export type Transaction = {
   accountId?: string;
 };
 
-export type View = 'dashboard' | 'recurring' | 'networth' | 'spending' | 'transactions';
+export type View = 'dashboard' | 'recurring' | 'usage' | 'spending' | 'transactions';
 
 export const CATEGORIES: Category[] = ['Entertainment', 'Music', 'Productivity', 'Cloud', 'Other'];
 

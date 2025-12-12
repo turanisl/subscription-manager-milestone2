@@ -1,4 +1,4 @@
-import { LayoutDashboard, RefreshCw, TrendingUp, PieChart, Receipt, Menu, X, MessageCircle, Bell, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
+import { LayoutDashboard, RefreshCw, BarChart3, PieChart, Receipt, Menu, X, MessageCircle, Bell, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { View } from '@/types/subscription';
 import { PanelType } from '@/types/panel';
@@ -8,7 +8,7 @@ import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/comp
 const navItems: { icon: typeof LayoutDashboard; label: string; view: View }[] = [
   { icon: LayoutDashboard, label: 'Dashboard', view: 'dashboard' },
   { icon: RefreshCw, label: 'Recurring', view: 'recurring' },
-  { icon: TrendingUp, label: 'Net Worth', view: 'networth' },
+  { icon: BarChart3, label: 'Usage', view: 'usage' },
   { icon: PieChart, label: 'Spending', view: 'spending' },
   { icon: Receipt, label: 'Transactions', view: 'transactions' },
 ];
