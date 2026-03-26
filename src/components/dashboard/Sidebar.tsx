@@ -7,10 +7,11 @@ import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/comp
 
 const navItems: { icon: typeof LayoutDashboard; label: string; view: View }[] = [
   { icon: LayoutDashboard, label: 'Dashboard', view: 'dashboard' },
-  { icon: RefreshCw, label: 'Recurring', view: 'recurring' },
-  { icon: BarChart3, label: 'Usage', view: 'usage' },
-  { icon: PieChart, label: 'Spending', view: 'spending' },
-  { icon: Receipt, label: 'Transactions', view: 'transactions' },
+  // Milestone 2: Only Dashboard visible. Advanced views hidden for now.
+  // { icon: RefreshCw, label: 'Recurring', view: 'recurring' },
+  // { icon: BarChart3, label: 'Usage', view: 'usage' },
+  // { icon: PieChart, label: 'Spending', view: 'spending' },
+  // { icon: Receipt, label: 'Transactions', view: 'transactions' },
 ];
 
 interface SidebarProps {
@@ -81,25 +82,7 @@ export function Sidebar({ isOpen, onToggle, currentView, onViewChange, collapsed
                   <p className="text-sm font-medium text-foreground">Turan Islamli</p>
                   <p className="text-xs text-muted-foreground">Premium Member</p>
                 </div>
-                <div className="flex items-center gap-1">
-                  <button 
-                    onClick={() => onPanelOpen('notifications')}
-                    className="relative p-2 rounded-lg hover:bg-sidebar-accent text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-                    aria-label="Notifications"
-                  >
-                    <Bell className="w-4 h-4" />
-                    {hasUnreadNotifications && (
-                      <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary" />
-                    )}
-                  </button>
-                  <button 
-                    onClick={() => onPanelOpen('settings')}
-                    className="p-2 rounded-lg hover:bg-sidebar-accent text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-                    aria-label="Settings"
-                  >
-                    <Settings className="w-4 h-4" />
-                  </button>
-                </div>
+                {/* Milestone 2: Notifications & Settings hidden */}
               </div>
             )}
           </div>
@@ -151,49 +134,9 @@ export function Sidebar({ isOpen, onToggle, currentView, onViewChange, collapsed
           {/* Spacer to push bottom section down */}
           <div className="flex-1" />
 
-          {/* Bottom Section - Quote + Chat */}
+          {/* Bottom Section */}
           <div className="mt-auto">
-            {/* Quote Section - Hidden when collapsed */}
-            {!isCollapsed && (
-              <div className="px-4 pb-4">
-                <div className="bg-sidebar-accent/50 rounded-lg p-4">
-                  <p className="text-xs text-foreground/80 italic leading-relaxed mb-2">
-                    "Setting goals is the first step in turning the invisible into the visible."
-                  </p>
-                  <p className="text-[10px] text-muted-foreground">— Tony Robbins</p>
-                </div>
-              </div>
-            )}
-
-            {/* Divider */}
-            <div className={cn("border-t border-sidebar-border", isCollapsed ? "mx-2" : "mx-4")} />
-
-            {/* Chat with us */}
-            <div className={cn("p-4", isCollapsed && "p-2")}>
-              {isCollapsed ? (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button 
-                      onClick={() => onPanelOpen('chat')}
-                      className="w-full flex items-center justify-center p-2.5 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground transition-colors cursor-pointer"
-                    >
-                      <MessageCircle className="w-5 h-5 text-muted-foreground" />
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent side="right" className="bg-popover text-popover-foreground border-border">
-                    Chat with us
-                  </TooltipContent>
-                </Tooltip>
-              ) : (
-                <button 
-                  onClick={() => onPanelOpen('chat')}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground transition-colors cursor-pointer"
-                >
-                  <MessageCircle className="w-5 h-5 text-muted-foreground" />
-                  <span className="text-sm">Chat with us</span>
-                </button>
-              )}
-            </div>
+            {/* Milestone 2: Quote and Chat hidden */}
 
             {/* Collapse Toggle Button - Desktop only */}
             <div className={cn("hidden lg:block border-t border-sidebar-border", isCollapsed ? "px-2 py-2" : "px-4 py-3")}>
