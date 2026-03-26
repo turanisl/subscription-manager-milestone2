@@ -1,30 +1,47 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Sidebar } from '@/components/dashboard/Sidebar';
 import { AddSubscriptionModal } from '@/components/dashboard/AddSubscriptionModal';
 import { DashboardView } from '@/components/views/DashboardView';
-import { mockSubscriptions, mockAccounts } from '@/data/mockData';
-import { Subscription, View, Account } from '@/types/subscription';
+import { mockSubscriptions } from '@/data/mockData';
+import { Subscription, View } from '@/types/subscription';
 import { PanelType } from '@/types/panel';
 import { toast } from '@/hooks/use-toast';
+
+const STORAGE_KEY = 'mint_subscriptions';
+
+function loadSubscriptions(): Subscription[] {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) return JSON.parse(saved);
+  } catch {}
+  // First launch: seed with mock data and persist
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(mockSubscriptions));
+  return mockSubscriptions;
+}
+
+function saveSubscriptions(subs: Subscription[]) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(subs));
+}
 
 const Index = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [currentView, setCurrentView] = useState<View>('dashboard');
-  const [subscriptions, setSubscriptions] = useState<Subscription[]>(mockSubscriptions);
-  const [accounts] = useState<Account[]>(mockAccounts);
+  const [subscriptions, setSubscriptions] = useState<Subscription[]>(loadSubscriptions);
   const [addModalOpen, setAddModalOpen] = useState(false);
-
-  // Milestone 2: panel state kept but not used in UI
   const [openPanel, setOpenPanel] = useState<PanelType>(null);
 
-  const handleAddSubscription = (newSub: Omit<Subscription, 'id'>, _accountId: string) => {
+  // Persist whenever subscriptions change
+  useEffect(() => {
+    saveSubscriptions(subscriptions);
+  }, [subscriptions]);
+
+  const handleAddSubscription = (newSub: Omit<Subscription, 'id'>) => {
     const subscription: Subscription = {
       ...newSub,
       id: Date.now().toString(),
     };
     setSubscriptions(prev => [subscription, ...prev]);
-
     toast({
       title: "Subscription added",
       description: `${subscription.name} has been added to your subscriptions.`,
@@ -44,7 +61,6 @@ const Index = () => {
         hasUnreadNotifications={false}
       />
 
-      {/* Main Content */}
       <div className="flex-1 flex flex-col min-h-screen">
         <main className="flex-1 p-6 lg:p-8 pt-20 lg:pt-8 overflow-auto max-w-5xl">
           <DashboardView
@@ -54,12 +70,10 @@ const Index = () => {
         </main>
       </div>
 
-      {/* Add Subscription Modal */}
       <AddSubscriptionModal
         open={addModalOpen}
         onClose={() => setAddModalOpen(false)}
         onAdd={handleAddSubscription}
-        accounts={accounts}
       />
     </div>
   );
